@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+input,
+select,
+textarea {
+  background-color: white;
+  outline: none;
+}
+button {
+  cursor: pointer;
+  background-color: transparent;
+  outline: none;
+}
+body {
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.header {
+  // height: 75px;
+  // background-color: #326e51;
+  color: #fff;
+  position: relative;
+  // width: 100%;
+  .header-content {
+    :after {
+      content: '';
+      top: 0;
+      left: 0;
+      position: absolute;
+      background-color: #326e51;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  }
+  .search-input {
+    outline: none;
+    color: #000000;
+  }
+  .search-input::placeholder {
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+  }
+  .btn-search {
+    background: #ff6600;
+  }
+  .item-cart {
+    background: #ff6600;
+    top: -9px;
+    left: 20px;
+  }
+  .text-1,
+  .text-2 {
+    font-size: 13px;
+  }
+}
+.sub-header_right,
+.sub-header_left {
+  color: #326e51;
+  .border-btn {
+    border: 1px solid #326e51;
+  }
+}
+:root {
+  --star-size: 14px;
+  --star-color: #ccc;
+  --star-background: orange;
+}
+.stars {
+  --percent: calc(var(--rating) / 5 * 100%);
+  display: inline-block;
+  font-size: var(--star-size);
+  font-family: Times, serif;
+  line-height: 1;
+
+  &::before {
+    content: '★★★★★';
+    letter-spacing: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--star-background) var(--percent),
+      var(--star-color) var(--percent)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
