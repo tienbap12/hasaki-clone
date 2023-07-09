@@ -121,3 +121,7 @@ body {
     -webkit-text-fill-color: transparent;
   }
 }
+
+.toast-index {
+  z-index: 1000000 !important;
+}

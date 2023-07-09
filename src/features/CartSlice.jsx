@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import '../App.scss';
+import { baseUrl } from '../components/Base';
+import axios from 'axios';
 
 const initialState = {
   cartItems: localStorage.getItem('cartItems')
@@ -88,6 +91,7 @@ const cartSlice = createSlice({
         toast.info('Đã tặng số lượng 1', {
           autoClose: 2000,
           position: 'top-right',
+          className: 'toast-index',
         });
       }
     },
@@ -98,7 +102,12 @@ const cartSlice = createSlice({
         autoClose: 2000,
         position: 'top-right',
       });
-      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+      localStorage.removeItem('cartItems');
+    },
+    syncCart: (state, action) => {
+      state.cartItems = [];
+      state.totalQuantity = 0;
+      localStorage.removeItem('cartItems');
     },
     getTotals: (state, action) => {
       let { total, quantity } = state.cartItems.reduce(
@@ -114,7 +123,7 @@ const cartSlice = createSlice({
           quantity: 0,
         }
       );
-      state.totalQuantity = quantity;
+      state.totalQuantity = state.cartItems.length;
       state.totalPrice = total;
     },
   },
@@ -127,6 +136,36 @@ export const {
   clearCart,
   getTotals,
   increaseCart,
+  syncCart,
 } = cartSlice.actions;
+
+export const syncCartWithAPI = () => {
+  return async (dispatch, getState) => {
+    const { auth, cart } = getState();
+    if (auth.isLogin) {
+      try {
+        const email = auth.email;
+        const token = auth.userToken;
+        const carts = cart.cartItems.map((item) => ({
+          email_user: email,
+          product_id: item._id,
+          quantity: item.totalQuantity,
+        }));
+        await axios
+          .post(`${baseUrl}/cart/add-to-cart`, carts, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((res) => {
+            dispatch(syncCart());
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+};
 
 export default cartSlice.reducer;

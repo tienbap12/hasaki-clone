@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseUrl } from '../components/Base';
 
 export const productsApi = createApi({
   reducerPath: 'productsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://determined-slug-turtleneck-shirt.cyclic.app/api',
+    baseUrl: baseUrl,
   }),
   endpoints: (builder) => ({
     getAllProducts: builder.query({

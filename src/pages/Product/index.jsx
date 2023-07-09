@@ -10,20 +10,60 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, getTotals } from '../../features/CartSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
+import { useAddCartMutation, useGetCartQuery } from '../../features/CartApi';
+import { selectEmail, selectStateLogin } from '../../features/AuthSlice';
+import { toast } from 'react-toastify';
 
 const Product = () => {
+  const stateLogin = useSelector(selectStateLogin);
+  const userEmail = useSelector(selectEmail);
   const [quantity, setQuantity] = useState(1);
   const [limit, setLimit] = useState(20);
   const cart = useSelector((state) => state.cart);
   const [selectedBrand, setSelectedBrand] = useState('');
   const { data, error, isLoading } = useGetAllProductsQuery();
+  const {
+    data: cartData,
+    isLoading: cartDataLoading,
+    isError,
+    error: cartDataError,
+    isSuccess,
+    refetch: cartDataRefetch,
+    isFetching,
+  } = useGetCartQuery(userEmail, {
+    pollingInterval: 300,
+  });
+  const [dataAddCart] = useAddCartMutation();
   const dispatch = useDispatch();
   const handleAddToCart = (product) => {
-    dispatch(addToCart({ ...product, totalQuantity: quantity }));
+    if (stateLogin === false) {
+      dispatch(addToCart({ ...product, totalQuantity: quantity }));
+    } else {
+      const data = [
+        {
+          email_user: userEmail,
+          product_id: product._id,
+          quantity: quantity,
+        },
+      ];
+      console.log(typeof data);
+      dataAddCart(data)
+        .then((res) => {
+          toast.success('Sản phẩm đã được thêm vào giỏ hàng', {
+            position: 'top-right',
+            autoClose: 2000,
+          });
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   useEffect(() => {
+    cartDataRefetch();
     dispatch(getTotals());
-  }, [cart, dispatch]);
+  }, [cart, dispatch, cartDataRefetch]);
   const uniqueBrands = Array.from(
     new Set(data?.data?.map((item) => item.brand))
   );
@@ -33,9 +73,9 @@ const Product = () => {
   const filteredProducts = selectedBrand
     ? data?.data?.filter((product) => product.brand === selectedBrand)
     : data?.data;
-  console.log(filteredProducts);
+
   return (
-    <div className="product-content bg-slate-50">
+    <div className="product-content bg-slate-50 mt-[100px] sm:mt-[110px] md:mt-[100px] lg:mt-[150px] xl:mt-[170px]">
       <div className="head-content">
         <h1 className="title uppercase font-bold text-xl text-center my-2 text-green-800">
           Tất cả sản phẩm
@@ -43,13 +83,13 @@ const Product = () => {
         {isLoading ? (
           <p>Loading ...</p>
         ) : error ? (
-          <p>An error occured...</p>
+          <p></p>
         ) : (
           <div className="m-3 flex gap-3">
             {uniqueBrands.map((brand) => (
               // <div className="m-3 flex" key={brand}>
               <button
-                className="text-black text-sm border-2  hover:border-[#ff235c] rounded p-3 bg-white"
+                className="text-black text-[9px] sm:text-sm border-2  hover:border-[#ff235c] rounded p-2 bg-white"
                 onClick={() => handleBrandFilter(brand)}
                 key={brand}
               >
@@ -63,10 +103,9 @@ const Product = () => {
       {isLoading ? (
         <p>Loading ...</p>
       ) : error ? (
-        <p>An error occured...</p>
+        <p>Không thể kết nối đến SERVER</p>
       ) : (
-        <div className="product-list grid grid-cols-5 grid-row-[10] my-5">
-          {/* .slice(0, limit ? limit : products.length) */}
+        <div className="product-list gap-3 grid grid-cols-2 mx-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 my-5">
           {filteredProducts.map((product, index) => (
             <div
               key={product._id}
@@ -74,7 +113,7 @@ const Product = () => {
             >
               <Link to={`/products/${product._id}`}>
                 <img src={product.image} alt="" className=" object-cover" />
-                <div className="product-price flex  justify-between items-center">
+                <div className="product-price flex justify-between items-center">
                   {/* <NumericFormat  className="new-price text-base text-orange-600">
                     {product.price}
                   </NumericFormat> */}
