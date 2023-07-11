@@ -17,6 +17,7 @@ import {
   useUpdateCartMutation,
 } from '../../features/CartApi';
 import { toast } from 'react-toastify';
+import ModalOrder from '../Order/ModalOrder';
 
 export default function Cart() {
   const cart = useSelector((state) => state.cart);
@@ -25,6 +26,8 @@ export default function Cart() {
   const [price, setPrice] = useState(0);
   const [total, setTotal] = useState(0);
   const [cartItem, setCartItem] = useState();
+  const [isShowOrder, setIsShowOrder] = useState(false);
+  const [isRefetchCart, setIsRefetchCart] = useState(false);
 
   const {
     data: cartData,
@@ -35,6 +38,10 @@ export default function Cart() {
     refetch,
     isFetching,
   } = useGetCartQuery(userEmail);
+  if (isRefetchCart) {
+    refetch();
+    setIsRefetchCart(false);
+  }
   const [updateCart] = useUpdateCartMutation();
   const [deleteCart] = useDeleteItemMutation();
   const dispatch = useDispatch();
@@ -54,7 +61,9 @@ export default function Cart() {
     }
   }, [isSuccess, cartData]);
 
-  useEffect(() => {}, [cartData]);
+  const handleShowOrderForm = () => {
+    setIsShowOrder(true);
+  };
 
   const handleRemoveFromCart = (cartItem) => {
     dispatch(removeFromCart(cartItem));
@@ -140,9 +149,9 @@ export default function Cart() {
   };
 
   return (
-    <div className="cart min-h-[400px] mt-[100px] sm:mt-[130px] lg:mt-[170px]">
+    <div className="cart min-h-[400px] ">
       <div className="cart-title">
-        <h1 className="title uppercase font-bold text-xl text-center my-2 text-green-800">
+        <h1 className="title uppercase font-bold text-xl text-center py-2 text-green-800">
           Giỏ hàng
         </h1>
       </div>
@@ -159,8 +168,8 @@ export default function Cart() {
           </div>
         ) : (
           <div className="cart-items my-3 ">
-            <div className="cart-table flex gap-3">
-              <div className="w-full p-3 lg:w-3/4 lg:mt-[10px] xl:mt-0">
+            <div className="cart-table flex flex-col gap-3 lg:flex-row">
+              <div className="w-full p-3 lg:w-3/4">
                 <table className="w-full">
                   <tr className="p-1 h-10 bg-[#f7f7f7] text-[13px]">
                     <th align="left">Sản phẩm</th>
@@ -251,39 +260,15 @@ export default function Cart() {
                     </tr>
                   ))}
                 </table>
-
-                <div>
-                  <div className="w-2/5 float-right lg:hidden">
-                    <div className="mb-[5px] text-[13px] flex flex-col items-end gap-3 pt-[11px] ">
-                      <div className="flex gap-3 justify-end items-center">
-                        <p>Tổng cộng:</p>
-                        <NumericFormat
-                          value={price}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          suffix=" đ"
-                          className="text-orange-500 font-bold text-xs"
-                        />
-                      </div>
-                      <div className="mb-[5px] text-[13px] flex justify-end">
-                        <p className="text-[#999]">(Đã bao gồm VAT)</p>
-                      </div>
-                      <button className="font-bold bg-orange-500 text-white text-center text-sm max-w-[167px]  p-2 rounded">
-                        Tiến hành thanh toán
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
-              <div className="hidden check-out lg:block lg:w-1/4">
-                <div className="px-3 mx-auto sticky lg:top-[233px]">
+              <div className="check-out lg:block lg:w-1/4">
+                <div className="px-3 mx-auto sticky top-0 mt-[10px]">
                   <h2 className="title py-3 p-3 h-10 border-t-[3px] border-t-green-800 flex items-center font-bold border-b-[1px]">
                     Hóa đơn của bạn
                   </h2>
                   <div className="p-[10px]">
                     <div className="mb-[5px] text-[13px] flex justify-between mt-3">
                       <p>Tạm tính</p>
-
                       <NumericFormat
                         className="text-xs"
                         value={price}
@@ -312,7 +297,10 @@ export default function Cart() {
                       <p className="text-[#999]">(Đã bao gồm VAT)</p>
                     </div>
                   </div>
-                  <button className="font-bold bg-orange-500 text-white text-center text-lg w-full  p-3 rounded">
+                  <button
+                    className="font-bold bg-orange-500 text-white text-center text-lg w-full p-3 rounded sm:w-[40%] sm:float-right lg:w-full"
+                    onClick={handleShowOrderForm}
+                  >
                     Tiến hành thanh toán
                   </button>
                 </div>
@@ -332,8 +320,8 @@ export default function Cart() {
         </div>
       ) : (
         <div className="cart-items my-3 ">
-          <div className="cart-table flex gap-3">
-            <div className="w-full p-3 lg:w-3/4 ">
+          <div className="cart-table flex flex-col gap-3 lg:flex-row">
+            <div className="w-full p-3 lg:w-3/4">
               <table className="w-full">
                 <tr className="p-1 h-10 bg-[#f7f7f7] text-[13px]">
                   <th align="left">Sản phẩm</th>
@@ -420,39 +408,15 @@ export default function Cart() {
                   </tr>
                 ))}
               </table>
-
-              <div>
-                <div className="w-2/5 float-right lg:hidden">
-                  <div className="mb-[5px] text-[13px] flex flex-col items-end gap-3 pt-[11px] ">
-                    <div className="flex gap-3 justify-end items-center">
-                      <p>Tổng cộng:</p>
-                      <NumericFormat
-                        value={cart.totalPrice}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        suffix=" đ"
-                        className="text-orange-500 font-bold text-xs"
-                      />
-                    </div>
-                    <div className="mb-[5px] text-[13px] flex justify-end">
-                      <p className="text-[#999]">(Đã bao gồm VAT)</p>
-                    </div>
-                    <button className="font-bold bg-orange-500 text-white text-center text-sm max-w-[167px]  p-2 rounded">
-                      Tiến hành thanh toán
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
-            <div className="hidden check-out md:block lg:w-1/4">
-              <div className="px-3 mx-auto sticky top-0">
+            <div className="check-out lg:block lg:w-1/4">
+              <div className="px-3 mx-auto sticky top-0 mt-[10px]">
                 <h2 className="title py-3 p-3 h-10 border-t-[3px] border-t-green-800 flex items-center font-bold border-b-[1px]">
                   Hóa đơn của bạn
                 </h2>
                 <div className="p-[10px]">
                   <div className="mb-[5px] text-[13px] flex justify-between mt-3">
                     <p>Tạm tính</p>
-
                     <NumericFormat
                       className="text-xs"
                       value={cart.totalPrice}
@@ -481,13 +445,20 @@ export default function Cart() {
                     <p className="text-[#999]">(Đã bao gồm VAT)</p>
                   </div>
                 </div>
-                <button className="font-bold bg-orange-500 text-white text-center text-lg w-full  p-3 rounded">
+                <button className="font-bold bg-orange-500 text-white text-center text-lg w-full p-3 rounded sm:w-[40%] sm:float-right lg:w-full">
                   Tiến hành thanh toán
                 </button>
               </div>
             </div>
           </div>
         </div>
+      )}
+      {isShowOrder && (
+        <ModalOrder
+          closeModal={setIsShowOrder}
+          reload={setIsRefetchCart}
+          total={price}
+        />
       )}
     </div>
   );

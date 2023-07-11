@@ -18,10 +18,16 @@ const Product = () => {
   const stateLogin = useSelector(selectStateLogin);
   const userEmail = useSelector(selectEmail);
   const [quantity, setQuantity] = useState(1);
-  const [limit, setLimit] = useState(20);
   const cart = useSelector((state) => state.cart);
   const [selectedBrand, setSelectedBrand] = useState('');
-  const { data, error, isLoading } = useGetAllProductsQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data, error, isLoading } = useGetAllProductsQuery({
+    page: currentPage,
+    size: pageSize,
+  });
+
+  console.log(data);
   const {
     data: cartData,
     isLoading: cartDataLoading,
@@ -30,9 +36,7 @@ const Product = () => {
     isSuccess,
     refetch: cartDataRefetch,
     isFetching,
-  } = useGetCartQuery(userEmail, {
-    pollingInterval: 300,
-  });
+  } = useGetCartQuery(userEmail);
   const [dataAddCart] = useAddCartMutation();
   const dispatch = useDispatch();
   const handleAddToCart = (product) => {
@@ -49,6 +53,7 @@ const Product = () => {
       console.log(typeof data);
       dataAddCart(data)
         .then((res) => {
+          cartDataRefetch();
           toast.success('Sản phẩm đã được thêm vào giỏ hàng', {
             position: 'top-right',
             autoClose: 2000,
@@ -65,19 +70,33 @@ const Product = () => {
     dispatch(getTotals());
   }, [cart, dispatch, cartDataRefetch]);
   const uniqueBrands = Array.from(
-    new Set(data?.data?.map((item) => item.brand))
+    new Set(data?.data?.filteredProduct.map((item) => item.brand))
   );
   const handleBrandFilter = (brand) => {
     setSelectedBrand(brand);
   };
   const filteredProducts = selectedBrand
-    ? data?.data?.filter((product) => product.brand === selectedBrand)
-    : data?.data;
+    ? data?.data?.filteredProduct.filter(
+        (product) => product.brand === selectedBrand
+      )
+    : data?.data?.filteredProduct;
 
+  const handleNextPage = () => {
+    if (currentPage >= 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   return (
-    <div className="product-content bg-slate-50 mt-[100px] sm:mt-[110px] md:mt-[100px] lg:mt-[150px] xl:mt-[170px]">
+    // mt-[100px] sm:mt-[110px] md:mt-[100px] lg:mt-[150px] xl:mt-[170px]
+    <div className="product-content bg-slate-50 ">
       <div className="head-content">
-        <h1 className="title uppercase font-bold text-xl text-center my-2 text-green-800">
+        <h1 className="title uppercase font-bold text-xl text-center py-2 text-green-800">
           Tất cả sản phẩm
         </h1>
         {isLoading ? (
@@ -114,9 +133,6 @@ const Product = () => {
               <Link to={`/products/${product._id}`}>
                 <img src={product.image} alt="" className=" object-cover" />
                 <div className="product-price flex justify-between items-center">
-                  {/* <NumericFormat  className="new-price text-base text-orange-600">
-                    {product.price}
-                  </NumericFormat> */}
                   <NumericFormat
                     className="new-price text-base text-orange-600 font-bold text-base"
                     value={product.price}
@@ -183,6 +199,22 @@ const Product = () => {
           ))}
         </div>
       )}
+      <div className="flex justify-center items-center gap-2 h-full py-2">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="border rounded min-h-[40px] cursor-pointer bg-orange-500 text-white px-2 disabled:bg-green-200"
+        >
+          Previous Page
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage >= 4}
+          className="border rounded min-h-[40px] cursor-pointer bg-orange-500 text-white px-2 disabled:bg-green-200"
+        >
+          Next Page
+        </button>
+      </div>
     </div>
   );
 };

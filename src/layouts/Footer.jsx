@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 function Footer() {
   return (
-    <div className="footer bg-[#e5fbf1] sticky bottom-0">
+    <div className="footer bg-[#e5fbf1]">
       <div
         className="container mx-auto  flex flex-col justify-center 
       lg:flex-row lg:justify-center lg:items-center xl:max-w-screen-xl"

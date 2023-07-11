@@ -17,12 +17,14 @@ import ModalRegister from '../pages/Account/Register/ModalRegister';
 import { logOut, selectStateLogin } from '../features/AuthSlice';
 import { toast } from 'react-toastify';
 import { useGetCartQuery } from '../features/CartApi';
+import SideBar from './SideBar';
 const Navbar = () => {
   const { totalQuantity } = useSelector((state) => state.cart);
   const { userInfo, email } = useSelector((state) => state.auth);
   const stateLogin = useSelector(selectStateLogin);
   const [isShowLogin, setIsShowLogin] = useState(false);
   const [isShowRegister, setIsShowRegister] = useState(false);
+
   const dispatch = useDispatch();
   const {
     data: cartData,
@@ -67,12 +69,13 @@ const Navbar = () => {
     });
   };
   return (
-    <div className="navbar fixed w-full top-0 left-0 z-[10000000]">
+    <div className="navbar w-full">
+      {/* <SideBar pageWrapId={'page-wrap'} outerContainerId={'outer-container'} /> */}
       <div className="flex justify-center">
         <img src={Banner} alt="Picture of the author" className="w-[100%]" />
       </div>
-      <div className="header w-full font-thin h-full">
-        <div className="header-content items-center flex justify-between mx-auto max-w-screen-xl py-3">
+      <div className="header w-full font-thin h-full ">
+        <div className="header-content  items-center flex justify-between mx-auto max-w-screen-xl py-3 sm:container xl:max-w-[1280px]">
           <MenuOutlined
             className="cursor-pointer border border-transparent hover:border-white p-1 rounded m-1"
             style={{ fontSize: '28px' }}
@@ -134,15 +137,26 @@ const Navbar = () => {
                         <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />{' '}
                       </svg>
                     </button>
-                    <ul className="dropdown-menu absolute hidden text-orange-700 pt-2 group-hover:block">
+                    <ul className="dropdown-menu absolute hidden bg-white text-orange-700 pt-2 group-hover:block group-hover:z-[1000000000000]">
                       <li className="">
-                        <button className="rounded-t text-black bg-white hover:bg-gray-400 p-2 block min-w-[100px]">
+                        <a
+                          href="/profile"
+                          className=" rounded-t text-black bg-white hover:bg-gray-400 p-2 block min-w-[150px] text-center"
+                        >
                           Thông tin
-                        </button>
+                        </a>
+                      </li>
+                      <li className="">
+                        <a
+                          href="/order"
+                          className=" rounded-t text-black bg-white hover:bg-gray-400 p-2 block min-w-[150px]"
+                        >
+                          Quản lý đơn hàng
+                        </a>
                       </li>
                       <li className="">
                         <button
-                          className="rounded-b text-black bg-white hover:bg-gray-400 p-2 min-w-[100px] block"
+                          className=" rounded-b text-black bg-white hover:bg-gray-400 p-2 min-w-[150px] block"
                           onClick={() => {
                             handleLogOutClick();
                           }}
@@ -154,7 +168,7 @@ const Navbar = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-content hidden sm:block">
+                <div className="text-content block">
                   <div className="text-1 flex gap-1">
                     <p
                       className="hover:text-orange-500 cursor-pointer"
@@ -237,7 +251,7 @@ const Navbar = () => {
           </div>
         </div>
         <div className="sub-header hidden lg:block lg:bg-green-100 lg:p-1 lg:text-xs ">
-          <div className="sub-header_content mx-auto flex max-w-screen-xl items-center justify-between">
+          <div className="sub-header_content  mx-auto flex max-w-screen-xl items-center justify-between lg:container xl:max-w-[1280px]">
             <div className="sub-header_left  items-center flex gap-3 uppercase">
               <button className="rounded border-btn px-1">
                 <LocationOnOutlinedIcon /> Chọn khu vực

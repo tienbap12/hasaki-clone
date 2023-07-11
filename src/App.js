@@ -13,6 +13,8 @@ import {
 import RootLayout from './layouts/RootLayout';
 import Cart from './pages/Cart';
 import DetailProduct from './pages/Product/DetailProduct';
+import Orders from './pages/Order';
+import Profile from './pages/Account/Profile';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,6 +23,8 @@ const router = createBrowserRouter(
       <Route path="/products" element={<Products />} />
       <Route path="/products/:productId" element={<DetailProduct />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/order" element={<Orders />} />
       <Route path="*" element={<ErrorElement />} />
     </Route>
   )

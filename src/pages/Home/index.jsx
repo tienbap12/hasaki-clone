@@ -39,8 +39,11 @@ export default function Home() {
     data: allProductsData,
     error: allProductsError,
     isLoading: allProductsLoading,
-  } = useGetAllProductsQuery();
-
+  } = useGetAllProductsQuery({
+    page: 1,
+    size: 20
+  });
+  console.log(allProductsData?.data);
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -236,8 +239,11 @@ export default function Home() {
               autoPlaySpeed={3000}
               // slidesToSlide={2}
             >
-              {allProductsData.data
-                .slice(0, limit ? limit : allProductsData.data.length)
+              {allProductsData?.data?.filteredProduct
+                .slice(
+                  0,
+                  limit ? limit : allProductsData?.data?.filteredProduct.length
+                )
                 .map((item, idprd) => (
                   <div
                     key={item._id}
