@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/hasaki-clone/static/css/main.98ae3972.css",
-    "main.js": "/hasaki-clone/static/js/main.fdd76b1a.js",
+    "main.js": "/hasaki-clone/static/js/main.7948fc67.js",
     "static/js/988.eda79322.chunk.js": "/hasaki-clone/static/js/988.eda79322.chunk.js",
     "static/media/banner2.jpg": "/hasaki-clone/static/media/banner2.ee6a58fcce902bfad28a.jpg",
     "static/media/16865396251320x50top10708.jpg": "/hasaki-clone/static/media/16865396251320x50top10708.cfb63725ff37d1670911.jpg",
@@ -13,11 +13,11 @@
     "static/media/logo.svg": "/hasaki-clone/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/hasaki-clone/index.html",
     "main.98ae3972.css.map": "/hasaki-clone/static/css/main.98ae3972.css.map",
-    "main.fdd76b1a.js.map": "/hasaki-clone/static/js/main.fdd76b1a.js.map",
+    "main.7948fc67.js.map": "/hasaki-clone/static/js/main.7948fc67.js.map",
     "988.eda79322.chunk.js.map": "/hasaki-clone/static/js/988.eda79322.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.98ae3972.css",
-    "static/js/main.fdd76b1a.js"
+    "static/js/main.7948fc67.js"
   ]
 }
