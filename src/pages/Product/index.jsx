@@ -93,7 +93,6 @@ const Product = () => {
     }
   };
   return (
-    // mt-[100px] sm:mt-[110px] md:mt-[100px] lg:mt-[150px] xl:mt-[170px]
     <div className="product-content bg-slate-50 ">
       <div className="head-content">
         <h1 className="title uppercase font-bold text-xl text-center py-2 text-green-800">

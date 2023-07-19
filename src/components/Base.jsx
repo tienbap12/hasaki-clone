@@ -1,1 +1,1 @@
-export const baseUrl = 'https://good-erin-shoulder-pads.cyclic.app/api';
+export const baseUrl = 'https://odd-plum-pelican-ring.cyclic.app/api';

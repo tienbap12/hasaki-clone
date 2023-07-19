@@ -6,31 +6,67 @@ import { FaLocationDot } from 'react-icons/fa6';
 import { FaCartPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, getTotals } from '../../../features/CartSlice';
+import { useAddCartMutation, useGetCartQuery } from '../../../features/CartApi';
+import { selectEmail, selectStateLogin } from '../../../features/AuthSlice';
+import { toast } from 'react-toastify';
 export default function DetailProduct() {
   const { productId } = useParams();
   const cart = useSelector((state) => state.cart);
   const { data, isLoading, error } = useGetSingleProductQuery(productId);
-  console.log(productId);
+  const [dataAddCart] = useAddCartMutation();
+  const stateLogin = useSelector(selectStateLogin);
   const [quantity, setQuantity] = useState(1);
+  const userEmail = useSelector(selectEmail);
+
+  const {
+    data: cartData,
+    isLoading: cartDataLoading,
+    isError,
+    error: cartDataError,
+    isSuccess,
+    refetch: cartDataRefetch,
+    isFetching,
+  } = useGetCartQuery(userEmail);
   const dispatch = useDispatch();
   const handleAddCart = () => {
     const product = data.data;
-    const updatedProduct = { ...product, totalQuantity: Number(quantity) };
-    dispatch(addToCart(updatedProduct));
+    if (stateLogin === false) {
+      dispatch(addToCart({ ...product, totalQuantity: Number(quantity) }));
+    } else {
+      const data = [
+        {
+          email_user: userEmail,
+          product_id: product._id,
+          quantity: quantity,
+        },
+      ];
+      dataAddCart(data)
+        .then((res) => {
+          cartDataRefetch();
+          toast.success('Sản phẩm đã được thêm vào giỏ hàng', {
+            position: 'top-right',
+            autoClose: 2000,
+          });
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   useEffect(() => {
     dispatch(getTotals());
   }, [cart, dispatch]);
   return (
-    <div className="single-product w-full py-3">
+    <div className="single-product w-full py-3 px-2">
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
       {data && (
-        <div className="w-full flex min-h-[380px]">
-          <div className="w-4/5">
-            <div className="product-item flex gap-3">
-              <div className="">
-                <img src={data.data.image} alt="" />
+        <div className="w-full flex flex-col min-h-[380px] lg:flex-row">
+          <div className="w-full lg:w-4/5">
+            <div className="product-item flex flex-col gap-3 md:flex-row">
+              <div className="flex justify-center ">
+                <img src={data.data.image} alt="" className="" />
               </div>
               <div className="product-content p-3">
                 <div className="flex gap-2 items-center">
@@ -114,7 +150,14 @@ export default function DetailProduct() {
                       type="number"
                       name=""
                       id=""
-                      onChange={(e) => setQuantity(e.target.value)}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (value > 0) {
+                          setQuantity(value);
+                        } else {
+                          setQuantity(1); // hoặc có thể không set lại giá trị
+                        }
+                      }}
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -141,7 +184,7 @@ export default function DetailProduct() {
                   </p>
                 </div>
                 <div className="product-action flex gap-3 my-2">
-                  <button className="border bg-[#cfeadd] text-[13px] h-[43px] flex items-center p-2 text-green-700 rounded">
+                  <button className="border bg-[#cfeadd] text-[13px] min-h-[43px] flex items-center p-2 text-green-700 rounded">
                     <p>
                       <FaLocationDot size={20} />
                     </p>
@@ -151,7 +194,7 @@ export default function DetailProduct() {
                     </p>
                   </button>
                   <button
-                    className="border text-[13px] h-[43px] flex p-2 items-center gap-2 text-white bg-[#326e52] rounded"
+                    className="border text-[13px] min-h-[43px] flex p-2 items-center gap-2 text-white bg-[#326e52] rounded"
                     onClick={() => handleAddCart(data.data)}
                   >
                     <p>
@@ -159,7 +202,7 @@ export default function DetailProduct() {
                     </p>
                     <strong>Giỏ hàng</strong>
                   </button>
-                  <button className="border bg-[#cfeadd] text-[13px] h-[43px] p-2 text-white bg-orange-500 flex flex-col items-center justify-center rounded">
+                  <button className="border  text-[13px] min-h-[43px] p-2 text-white bg-orange-500 flex flex-col items-center justify-center rounded">
                     <strong className="text-sm">Mua ngay NowFree 2h</strong>
                     <p>Trễ tặng 100k</p>
                   </button>
@@ -167,10 +210,10 @@ export default function DetailProduct() {
               </div>
             </div>
           </div>
-          <div className="w-1/5 bg-[#F2F1F6]">
+          <div className="w-full lg:w-1/5 bg-white">
             <div className="relative p-2">
               <div className="before:content-[''] before:h-[2px] before:bg-[#326e51] before:absolute before:w-[80%] before:top-[50%] before:translate-y-[-50%] before:z-[2] before:left-[50%] before:translate-x-[-50%]"></div>
-              <p className="z-10 bg-[#F2F1F6] inline-block text-[13px] text-[#326e51] font-bold w-fit left-[50%] translate-x-[-50%] px-2 relative">
+              <p className="z-10 bg-[#fff] inline-block text-[13px] text-[#326e51] font-bold w-fit left-[50%] translate-x-[-50%] px-2 relative">
                 MIỄN PHÍ VẬN CHUYỂN
               </p>
             </div>

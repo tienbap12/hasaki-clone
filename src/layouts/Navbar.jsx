@@ -6,9 +6,7 @@ import { Link } from 'react-router-dom';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { RiArrowDownSFill } from 'react-icons/ri';
 import { useEffect, useState } from 'react';
@@ -17,13 +15,18 @@ import ModalRegister from '../pages/Account/Register/ModalRegister';
 import { logOut, selectStateLogin } from '../features/AuthSlice';
 import { toast } from 'react-toastify';
 import { useGetCartQuery } from '../features/CartApi';
+
 import SideBar from './SideBar';
+import SearchBar from '../components/SearchBar';
+import SearchResults from '../components/SearchResults';
+import SubHeader from './SubHeader';
 const Navbar = () => {
   const { totalQuantity } = useSelector((state) => state.cart);
   const { userInfo, email } = useSelector((state) => state.auth);
   const stateLogin = useSelector(selectStateLogin);
   const [isShowLogin, setIsShowLogin] = useState(false);
   const [isShowRegister, setIsShowRegister] = useState(false);
+  const [results, setResults] = useState([]);
 
   const dispatch = useDispatch();
   const {
@@ -39,9 +42,6 @@ const Navbar = () => {
   useEffect(() => {
     refetch();
     if (isSuccess) {
-      for (let i = 0; i < cartData?.data?.length; i++) {
-        console.log(i);
-      }
       setTotal(cartData?.data?.length);
     }
   }, [cartData, isSuccess]);
@@ -70,28 +70,24 @@ const Navbar = () => {
   };
   return (
     <div className="navbar w-full">
-      {/* <SideBar pageWrapId={'page-wrap'} outerContainerId={'outer-container'} /> */}
       <div className="flex justify-center">
         <img src={Banner} alt="Picture of the author" className="w-[100%]" />
       </div>
       <div className="header w-full font-thin h-full ">
         <div className="header-content  items-center flex justify-between mx-auto max-w-screen-xl py-3 sm:container xl:max-w-[1280px]">
-          <MenuOutlined
-            className="cursor-pointer border border-transparent hover:border-white p-1 rounded m-1"
-            style={{ fontSize: '28px' }}
-          />
+          <SideBar />
           <Link to="/">
             <img
               src="https://hasaki.vn/wap-static/images/icons/logo_hsk_white.svg"
               alt=""
-              className="block w-[30px] sm:hidden"
+              className="block w-[30px] sm:w-[40px] md:hidden "
             />
             <img
-              className="hidden sm:block lg:block cursor-pointer w-[180px] h-[41px]"
+              className="hidden md:block cursor-pointer w-[180px] h-[41px]"
               src={logoWeb}
             />
           </Link>
-          <div className="header-search">
+          <div className="header-search relative">
             <div className="search-top text-xs gap-2 hidden sm:hidden xl:flex">
               <a href="">Kem chống nắng</a>
               <a href="">Tẩy trang</a>
@@ -100,31 +96,18 @@ const Navbar = () => {
               <a href="">Tẩy tế bào chết</a>
               <a href="">Retinol</a>
             </div>
-            <div className="search-bar flex mt-1 items-center">
-              <input
-                className="w-full h-8 rounded-l search-input p-1 text-sm"
-                type="text"
-                placeholder="Tìm sản phẩm, thương hiệu bạn mong muốn..."
-              />
-              <button className="btn-search w-12 h-8 flex items-center justify-center rounded-r">
-                <SearchOutlined />
-              </button>
-            </div>
+            <SearchBar setResults={setResults} />
+            <SearchResults results={results} setResults={setResults} />
           </div>
           <div className="right-header flex gap-3  ">
             <div className="header-item flex items-center gap-2 text-sm group">
-              <div className="hidden icon-header border rounded-full p-2 ">
+              <div className="icon-header border rounded-full p-2 ">
                 <PermIdentityOutlinedIcon fontSize="medium" />
               </div>
               {stateLogin ? (
                 <div className="text-content ">
                   <div className="text-1 flex gap-1">
-                    <p
-                      className="hover:text-orange-500 cursor-pointer"
-                      onClick={handleLogOutClick}
-                    >
-                      Xin chào!
-                    </p>
+                    <p className="hover:text-orange-500 cursor-pointer"></p>
                   </div>
                   <div className="dropdown inline-block relative">
                     <button className=" text-orange-600 font-semibold rounded inline-flex items-center group ">
@@ -169,7 +152,7 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="text-content block">
-                  <div className="text-1 flex gap-1">
+                  <div className="text-1 hidden sm:flex sm:gap-1">
                     <p
                       className="hover:text-orange-500 cursor-pointer"
                       onClick={handleLoginClick}
@@ -184,7 +167,7 @@ const Navbar = () => {
                       Đăng ký
                     </div>
                   </div>
-                  <div className="text-2">
+                  <div className="text-2" onClick={handleLoginClick}>
                     <div className="flex items-center p-1 cursor-pointer">
                       Tài khoản
                       <span className="icon-breakdown">
@@ -251,27 +234,7 @@ const Navbar = () => {
           </div>
         </div>
         <div className="sub-header hidden lg:block lg:bg-green-100 lg:p-1 lg:text-xs ">
-          <div className="sub-header_content  mx-auto flex max-w-screen-xl items-center justify-between lg:container xl:max-w-[1280px]">
-            <div className="sub-header_left  items-center flex gap-3 uppercase">
-              <button className="rounded border-btn px-1">
-                <LocationOnOutlinedIcon /> Chọn khu vực
-              </button>
-              <a href="">Hasaki Deals</a>
-              <a href="">Hot Deals</a>
-              <a href="">Thương hiệu</a>
-              <a href="">Hàng mới về</a>
-              <a href="">bán chạy</a>
-              <a href="">Clinic & Spa</a>
-            </div>
-            <div className="sub-header_right  items-center flex gap-3 ">
-              <button className="rounded border-btn px-1">
-                <PhoneAndroidOutlinedIcon /> Tải ứng dụng
-              </button>
-              <button className="rounded border-btn px-1">
-                <Inventory2OutlinedIcon /> Tra cứu đơn hàng
-              </button>
-            </div>
-          </div>
+          <SubHeader />
         </div>
       </div>
       {isShowLogin && (

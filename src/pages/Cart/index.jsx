@@ -18,6 +18,7 @@ import {
 } from '../../features/CartApi';
 import { toast } from 'react-toastify';
 import ModalOrder from '../Order/ModalOrder';
+import ModalConfirm from '../../components/Modal';
 
 export default function Cart() {
   const cart = useSelector((state) => state.cart);
@@ -28,6 +29,9 @@ export default function Cart() {
   const [cartItem, setCartItem] = useState();
   const [isShowOrder, setIsShowOrder] = useState(false);
   const [isRefetchCart, setIsRefetchCart] = useState(false);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const {
     data: cartData,
@@ -184,7 +188,7 @@ export default function Cart() {
                     >
                       <td align="left">
                         <div className="flex flex-col sm:flex-row ">
-                          <Link to={`/products/${cartItem._id}`}>
+                          <Link to={`/products/${cartItem.COMMON[0]._id}`}>
                             <img
                               src={cartItem?.COMMON[0].image}
                               alt={cartItem?.COMMON[0].name}
@@ -445,7 +449,11 @@ export default function Cart() {
                     <p className="text-[#999]">(Đã bao gồm VAT)</p>
                   </div>
                 </div>
-                <button className="font-bold bg-orange-500 text-white text-center text-lg w-full p-3 rounded sm:w-[40%] sm:float-right lg:w-full">
+                <button
+                  variant="primary"
+                  onClick={handleShow}
+                  className="font-bold bg-orange-500 text-white text-center text-lg w-full p-3 rounded sm:w-[40%] sm:float-right lg:w-full"
+                >
                   Tiến hành thanh toán
                 </button>
               </div>
@@ -453,6 +461,7 @@ export default function Cart() {
           </div>
         </div>
       )}
+      {show && <ModalConfirm closeModal={setShow} />}
       {isShowOrder && (
         <ModalOrder
           closeModal={setIsShowOrder}

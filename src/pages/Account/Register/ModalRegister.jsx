@@ -129,7 +129,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 type="text"
                                 autocomplete="email"
                                 {...register('email', registerOptions.email)}
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6 px-2"
+                                className="block w-full rounded-md border border-black sm:border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6 px-2"
                               />
                               <span className="text-red-500 italic mt-2 text-[10px]">
                                 {errors?.email && errors?.email.message}
@@ -148,7 +148,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 {...register('gender', registerOptions.gender)}
                                 name="gender"
                                 id="gender"
-                                className={`w-full border p-2 rounded sm:w-[200px] ${
+                                className={`w-full border border-black sm:border-gray-300  p-2 rounded sm:w-[200px] ${
                                   errors?.gender ? 'border-red-500' : ''
                                 }`}
                               >
@@ -183,7 +183,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 type="password"
                                 autocomplete="current-password"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6 px-2"
+                                className="block w-full rounded-md border border-black sm:border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6 px-2"
                               />
                               <span className="text-red-500 italic mt-2 text-[10px]">
                                 {errors?.password && errors?.password.message}
@@ -207,7 +207,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 name="fullName"
                                 type="text"
                                 required
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:l-6 px-2"
+                                class="block w-full rounded-md border border-black sm:border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:l-6 px-2"
                               />
                               <span className="text-red-500 italic mt-2 text-[10px]">
                                 {errors?.fullName && errors?.fullName.message}
@@ -222,10 +222,10 @@ export default function ModalRegister({ closeModal, switchModal }) {
                               Ngày sinh
                             </label>
                             <div class="mt-2">
-                              <div className="px-auto flex justify-center gap-4 sm:justify-start">
+                              <div className="px-auto flex justify-center gap-4 sm:justify-start ">
                                 <select
                                   {...register('day', registerOptions.day)}
-                                  className={` border p-2 rounded ${
+                                  className={` border border-black sm:border-gray-300 p-2 rounded ${
                                     errors?.day ? 'border-red-500' : ''
                                   }`}
                                 >
@@ -238,7 +238,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 </select>
                                 <select
                                   {...register('month', registerOptions.month)}
-                                  className={`border p-2 rounded ${
+                                  className={`border border-black sm:border-gray-300  p-2 rounded ${
                                     errors?.month ? 'border-red-500' : ''
                                   }`}
                                 >
@@ -251,7 +251,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
                                 </select>
                                 <select
                                   {...register('year', registerOptions.year)}
-                                  className={`border p-2 rounded ${
+                                  className={`border border-black sm:border-gray-300 p-2 rounded ${
                                     errors?.year ? 'border-red-500' : ''
                                   }`}
                                 >

@@ -6,10 +6,6 @@ import { useNavigate } from 'react-router-dom';
 function Profile() {
   const isLogin = useSelector(selectStateLogin);
   const userInfo = useSelector((state) => state.auth.userInfo);
-  const navigate = useNavigate();
-  // if (!isLogin) {
-  //   return navigate('/');
-  // }
 
   return (
     <div>

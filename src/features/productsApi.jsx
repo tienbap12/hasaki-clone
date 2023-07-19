@@ -10,6 +10,9 @@ export const productsApi = createApi({
     getAllProducts: builder.query({
       query: ({ page, size }) => `/product?size=${size}&page=${page}`,
     }),
+    // searchProduct: builder.query({
+    //   query: (string) => `/product?size=${size}&page=${page}`,
+    // }),
     getSingleProduct: builder.query({
       query: (productId) => `/product/${productId}`,
     }),
