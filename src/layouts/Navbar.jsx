@@ -101,7 +101,7 @@ const Navbar = () => {
           </div>
           <div className="right-header flex gap-3  ">
             <div className="header-item flex items-center gap-2 text-sm group">
-              <div className="icon-header border rounded-full p-2 ">
+              <div className="icon-header hidden border rounded-full p-2 lg:block">
                 <PermIdentityOutlinedIcon fontSize="medium" />
               </div>
               {stateLogin ? (

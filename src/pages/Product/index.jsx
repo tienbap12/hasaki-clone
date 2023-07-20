@@ -1,42 +1,42 @@
 'use client';
 import { BsCart3 } from 'react-icons/bs';
-import { icon_categories, products } from '../../components/Data';
-
 import { useState } from 'react';
-import axios from 'axios';
 import { useEffect } from 'react';
 import { useGetAllProductsQuery } from '../../features/productsApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, getTotals } from '../../features/CartSlice';
-import { Link, useNavigate } from 'react-router-dom';
-import { NumericFormat } from 'react-number-format';
 import { useAddCartMutation, useGetCartQuery } from '../../features/CartApi';
 import { selectEmail, selectStateLogin } from '../../features/AuthSlice';
 import { toast } from 'react-toastify';
-
+import ProductItem from './ProductItem';
+import ProductSkeleton from './ProductSkeleton';
+import Skeleton from 'react-loading-skeleton';
+import { Pagination } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
 const Product = () => {
   const stateLogin = useSelector(selectStateLogin);
   const userEmail = useSelector(selectEmail);
   const [quantity, setQuantity] = useState(1);
   const cart = useSelector((state) => state.cart);
   const [selectedBrand, setSelectedBrand] = useState('');
+  const [availableBrands, setAvailableBrands] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { data, error, isLoading } = useGetAllProductsQuery({
     page: currentPage,
     size: pageSize,
   });
-
-  console.log(data);
-  const {
-    data: cartData,
-    isLoading: cartDataLoading,
-    isError,
-    error: cartDataError,
-    isSuccess,
-    refetch: cartDataRefetch,
-    isFetching,
-  } = useGetCartQuery(userEmail);
+  const totalProducts = data?.data?.totalProducts;
+  const totalPages = Math.ceil(totalProducts / pageSize);
+  const useStyles = makeStyles(() => ({
+    ul: {
+      '& .MuiPaginationItem-root': {
+        color: '#15803d',
+      },
+    },
+  }));
+  const classes = useStyles();
+  const { refetch: cartDataRefetch } = useGetCartQuery(userEmail);
   const [dataAddCart] = useAddCartMutation();
   const dispatch = useDispatch();
   const handleAddToCart = (product) => {
@@ -65,6 +65,7 @@ const Product = () => {
         });
     }
   };
+
   useEffect(() => {
     cartDataRefetch();
     dispatch(getTotals());
@@ -74,6 +75,11 @@ const Product = () => {
   );
   const handleBrandFilter = (brand) => {
     setSelectedBrand(brand);
+    setAvailableBrands(
+      data?.data?.filteredProduct
+        .filter((product) => product.brand === brand)
+        .map((product) => product.brand)
+    );
   };
   const filteredProducts = selectedBrand
     ? data?.data?.filteredProduct.filter(
@@ -81,17 +87,6 @@ const Product = () => {
       )
     : data?.data?.filteredProduct;
 
-  const handleNextPage = () => {
-    if (currentPage >= 1) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
   return (
     <div className="product-content bg-slate-50 ">
       <div className="head-content">
@@ -99,13 +94,14 @@ const Product = () => {
           Tất cả sản phẩm
         </h1>
         {isLoading ? (
-          <p>Loading ...</p>
+          <div className="px-2">
+            <Skeleton width={'100%'} height={40} />
+          </div>
         ) : error ? (
           <p></p>
         ) : (
           <div className="m-3 flex gap-3">
             {uniqueBrands.map((brand) => (
-              // <div className="m-3 flex" key={brand}>
               <button
                 className="text-black text-[9px] sm:text-sm border-2  hover:border-[#ff235c] rounded p-2 bg-white"
                 onClick={() => handleBrandFilter(brand)}
@@ -119,7 +115,9 @@ const Product = () => {
         )}
       </div>
       {isLoading ? (
-        <p>Loading ...</p>
+        <div className="p-2">
+          <ProductSkeleton />
+        </div>
       ) : error ? (
         <p>Không thể kết nối đến SERVER</p>
       ) : (
@@ -127,65 +125,19 @@ const Product = () => {
           {filteredProducts.map((product, index) => (
             <div
               key={product._id}
-              className=" border p-2 leading-relaxed cursor-pointer hover:border-orange-500"
+              className="border p-2 leading-relaxed cursor-pointer hover:border-orange-500"
             >
-              <Link to={`/products/${product._id}`}>
-                <img src={product.image} alt="" className=" object-cover" />
-                <div className="product-price flex justify-between items-center">
-                  <NumericFormat
-                    className="new-price text-base text-orange-600 font-bold text-base"
-                    value={product.price}
-                    displayType={'text'}
-                    thousandSeparator={true}
-                    suffix=" đ"
-                  />
-                  <div className="old-price">
-                    <NumericFormat
-                      className="old-price_text text-xs line-through"
-                      value={product.old_price}
-                      displayType={'text'}
-                      thousandSeparator={true}
-                      suffix=" đ"
-                    />
-                    &ensp;
-                    <NumericFormat
-                      className={`percent-discount text-sm ${
-                        product.discount
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-white'
-                      } text-white p-1 rounded`}
-                      value={product.discount}
-                      displayType={'text'}
-                      thousandSeparator={true}
-                      suffix="%"
-                    />
-                  </div>
-                </div>
-                <div className="product-title ">
-                  <p className="title uppercase text-green-900 text-sm font-bold line-clamp-1">
-                    {product.brand}
-                  </p>
-                  <p className="sub-title text-xs line-clamp-2 min-h-[32px]">
-                    {product.desc_vn}
-                  </p>
-                </div>
-                <div className="product-footer flex items-center mt-2 gap-2">
-                  <div className="rating flex gap-1">
-                    <div
-                      className="stars"
-                      style={{ '--rating': product.rating }}
-                    ></div>
-                    <span className="text-xs">
-                      ({product.products_sold || 0})
-                    </span>
-                  </div>
-                  <span>|</span>
-                  <div className="product-count_cart flex gap-1">
-                    <BsCart3 size={12} />
-                    <p className="text-xs">{product.products_sold}</p>
-                  </div>
-                </div>
-              </Link>
+              <ProductItem
+                id={product._id}
+                img={product.image}
+                price={product.price}
+                oldPrice={product.old_price}
+                discount={product.discount}
+                brand={product.brand}
+                desc_vn={product.desc_vn}
+                rating={product.rating}
+                productSold={product.products_sold}
+              />
               <div className="w-full flex justify-center hover:scale-110 duration-700 transition ease-in">
                 <button
                   className="text-white text-sm bg-orange-500 border-none outline-none p-2 rounded flex items-center gap-1 hover:bg-green-700"
@@ -199,20 +151,13 @@ const Product = () => {
         </div>
       )}
       <div className="flex justify-center items-center gap-2 h-full py-2">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="border rounded min-h-[40px] cursor-pointer bg-orange-500 text-white px-2 disabled:bg-green-200"
-        >
-          Previous Page
-        </button>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage >= 4}
-          className="border rounded min-h-[40px] cursor-pointer bg-orange-500 text-white px-2 disabled:bg-green-200"
-        >
-          Next Page
-        </button>
+        <Pagination
+          classes={{ ul: classes.ul }}
+          count={totalPages}
+          page={currentPage}
+          onChange={(event, page) => setCurrentPage(page)}
+          style={{ marginBottom: '1rem', color: 'green' }}
+        />
       </div>
     </div>
   );
