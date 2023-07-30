@@ -151,6 +151,7 @@ export const syncCartWithAPI = () => {
           product_id: item._id,
           quantity: item.totalQuantity,
         }));
+        console.log(carts);
         await axios
           .post(`${baseUrl}/cart/add-to-cart`, carts, {
             headers: { Authorization: `Bearer ${token}` },

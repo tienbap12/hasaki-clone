@@ -26,6 +26,7 @@ const Product = () => {
     page: currentPage,
     size: pageSize,
   });
+  console.log('data', data?.message);
   const totalProducts = data?.data?.totalProducts;
   const totalPages = Math.ceil(totalProducts / pageSize);
   const useStyles = makeStyles(() => ({
