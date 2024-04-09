@@ -10,7 +10,7 @@ export const AccountApi = createApi({
     loginUser: builder.mutation({
       query: (args) => {
         return {
-          url: '/user/login',
+          url: '/users/login',
           method: 'post',
           body: {
             email: args.email,
@@ -22,21 +22,35 @@ export const AccountApi = createApi({
     registerUser: builder.mutation({
       query: (args) => {
         return {
-          url: '/user/register',
+          url: '/users/register',
           method: 'post',
           body: {
             email: args.email,
             gender: args.gender,
             password: args.password,
             name: args.fullName,
-            day: args.day,
+            date: args.day,
             month: args.month,
             year: args.year,
+            phoneNumber: args.phoneNumber,
           },
         };
       },
     }),
+    /** FIXME::fix logout Api */
+    // logOut: builder.mutation({
+    //   query: (args) => {
+    //     return {
+    //       url: `/users/logout/${args}`,
+    //       method: 'post',
+    //     };
+    //   },
+    // }),
   }),
 });
 
-export const { useLoginUserMutation, useRegisterUserMutation } = AccountApi;
+export const {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+  useLogOutMutation,
+} = AccountApi;

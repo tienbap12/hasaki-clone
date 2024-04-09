@@ -13,6 +13,7 @@ export default function ModalLogin({ closeModal, switchModal }) {
   const [loginUser, { data: user, isLoading, isError, isSuccess, error }] =
     useLoginUserMutation();
   if (isSuccess) {
+    console.log('gegegee', user);
     dispatch(setCredentials(user));
     dispatch(syncCartWithAPI());
     closeModal(false);

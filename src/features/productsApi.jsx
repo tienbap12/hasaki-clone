@@ -8,13 +8,14 @@ export const productsApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllProducts: builder.query({
-      query: ({ page, size }) => `/product?size=${size}&page=${page}`,
+      query: ({ page, size, searchString }) =>
+        `/products?size=${size}&page=${page}&searchString=${searchString}`,
     }),
     getSingleProduct: builder.query({
-      query: (productId) => `/product/${productId}`,
+      query: (productId) => `/products/${productId}`,
     }),
     getAllCategory: builder.query({
-      query: () => '/icon-categories',
+      query: () => '/iconCategories',
     }),
   }),
 });

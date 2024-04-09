@@ -18,6 +18,7 @@ export default function ModalRegister({ closeModal, switchModal }) {
   const PWD_REGEX =
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
   const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const PHONE_REGEX = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
   const registerOptions = {
     email: {
       required: 'Không được trống',
@@ -39,6 +40,14 @@ export default function ModalRegister({ closeModal, switchModal }) {
       required: 'Không được trống',
       minLength: { value: 6, message: 'Họ và tên tối thiểu 6 ký tự' },
       maxLength: { value: 50, message: 'Họ và tên tối đa 50 ký tự' },
+    },
+
+    phoneNumber: {
+      required: 'Không được trống',
+      pattern: {
+        value: PHONE_REGEX,
+        message: 'Số điện thoại không hợp lệ',
+      },
     },
     gender: {
       required: 'Vui lòng chọn giới tính',
@@ -211,6 +220,31 @@ export default function ModalRegister({ closeModal, switchModal }) {
                               />
                               <span className="text-red-500 italic mt-2 text-[10px]">
                                 {errors?.fullName && errors?.fullName.message}
+                              </span>
+                            </div>
+                          </div>
+                          <div>
+                            <label
+                              for="phoneNumber"
+                              class="block text-sm font-medium leading-6 text-gray-900"
+                            >
+                              Số điện thoại
+                            </label>
+                            <div class="mt-2">
+                              <input
+                                {...register(
+                                  'phoneNumber',
+                                  registerOptions.phoneNumber
+                                )}
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                type="text"
+                                required
+                                class="block w-full rounded-md border border-black sm:border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:l-6 px-2"
+                              />
+                              <span className="text-red-500 italic mt-2 text-[10px]">
+                                {errors?.phoneNumber &&
+                                  errors?.phoneNumber.message}
                               </span>
                             </div>
                           </div>

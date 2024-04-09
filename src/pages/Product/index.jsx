@@ -21,13 +21,16 @@ const Product = () => {
   const [selectedBrand, setSelectedBrand] = useState('');
   const [availableBrands, setAvailableBrands] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(40);
+  const [searchString, setSearchString] = useState('');
   const { data, error, isLoading } = useGetAllProductsQuery({
     page: currentPage,
     size: pageSize,
+    searchString: '',
   });
-  console.log('data', data?.message);
-  const totalProducts = data?.data?.totalProducts;
+  console.log(data);
+  const totalProducts = data?.total;
+  console.log(totalProducts);
   const totalPages = Math.ceil(totalProducts / pageSize);
   const useStyles = makeStyles(() => ({
     ul: {
@@ -51,7 +54,6 @@ const Product = () => {
           quantity: quantity,
         },
       ];
-      console.log(typeof data);
       dataAddCart(data)
         .then((res) => {
           cartDataRefetch();
@@ -72,21 +74,19 @@ const Product = () => {
     dispatch(getTotals());
   }, [cart, dispatch, cartDataRefetch]);
   const uniqueBrands = Array.from(
-    new Set(data?.data?.filteredProduct.map((item) => item.brand))
+    new Set(data?.data?.map((item) => item.brand))
   );
   const handleBrandFilter = (brand) => {
     setSelectedBrand(brand);
     setAvailableBrands(
-      data?.data?.filteredProduct
-        .filter((product) => product.brand === brand)
+      data?.data
+        ?.filter((product) => product.brand === brand)
         .map((product) => product.brand)
     );
   };
   const filteredProducts = selectedBrand
-    ? data?.data?.filteredProduct.filter(
-        (product) => product.brand === selectedBrand
-      )
-    : data?.data?.filteredProduct;
+    ? data?.data?.filter((product) => product.brand === selectedBrand)
+    : data?.data;
 
   return (
     <div className="product-content bg-slate-50 ">
@@ -101,10 +101,10 @@ const Product = () => {
         ) : error ? (
           <p></p>
         ) : (
-          <div className="m-3 flex gap-3">
+          <div className="m-3 flex gap-3 overflow-x-scroll">
             {uniqueBrands.map((brand) => (
               <button
-                className="text-black text-[9px] sm:text-sm border-2  hover:border-[#ff235c] rounded p-2 bg-white"
+                className="text-black text-[9px] sm:text-sm border-2  hover:border-[#ff235c] rounded p-2 bg-white "
                 onClick={() => handleBrandFilter(brand)}
                 key={brand}
               >

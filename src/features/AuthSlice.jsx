@@ -24,8 +24,14 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { ...dataInfo } = action.payload.data;
-      state.userInfo = dataInfo;
-      state.userToken = dataInfo.token;
+      const token = action.payload;
+      state.userInfo = {
+        ...dataInfo,
+        password: undefined,
+        createdAt: undefined,
+        updatedAt: undefined,
+      };
+      state.userToken = token.token;
       state.email = dataInfo.email;
       state.isLogin = true;
       localStorage.setItem('userInfo', JSON.stringify(state.userInfo));
@@ -45,8 +51,8 @@ const authSlice = createSlice({
   },
   extraReducers: {},
 });
-
 export const { setCredentials, logOut } = authSlice.actions;
 export default authSlice.reducer;
 export const selectEmail = (state) => state.auth.email;
 export const selectStateLogin = (state) => state.auth.isLogin;
+export const selectPhoneNumber = (state) => state.auth.userInfo.phoneNumber;

@@ -9,7 +9,7 @@ function SearchResults({ results, setResults }) {
   };
   return (
     <div className="bg-white ">
-      {results.length > 0 ? (
+      {results?.length > 0 ? (
         <div className="border max-h-[300px] max-w-[400px] overflow-y-scroll absolute z-[1000000] cursor-pointer ">
           {results.map((item) => (
             <div

@@ -20,6 +20,7 @@ import SideBar from './SideBar';
 import SearchBar from '../components/SearchBar';
 import SearchResults from '../components/SearchResults';
 import SubHeader from './SubHeader';
+import { useLogOutMutation } from '../features/AccountApi';
 const Navbar = () => {
   const { totalQuantity } = useSelector((state) => state.cart);
   const { userInfo, email } = useSelector((state) => state.auth);
@@ -57,7 +58,6 @@ const Navbar = () => {
   };
   const handleLogOutClick = () => {
     dispatch(logOut());
-    // window.location.reload();
     toast.error('Đăng xuất thành công', {
       position: 'top-right',
       autoClose: 2000,
@@ -85,6 +85,7 @@ const Navbar = () => {
             <img
               className="hidden md:block cursor-pointer w-[180px] h-[41px]"
               src={logoWeb}
+              alt="abc"
             />
           </Link>
           <div className="header-search relative">
@@ -111,7 +112,9 @@ const Navbar = () => {
                   </div>
                   <div className="dropdown inline-block relative">
                     <button className=" text-orange-600 font-semibold rounded inline-flex items-center group ">
-                      <span className="">{userInfo.name}</span>
+                      <span className="max-w-[100px] max-h-[40px] overflow-hidden">
+                        {userInfo.name}
+                      </span>
                       <svg
                         className="fill-current h-4 w-8"
                         xmlns="http://www.w3.org/2000/svg"

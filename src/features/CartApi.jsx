@@ -17,30 +17,27 @@ export const CartApi = createApi({
   endpoints: (builder) => ({
     getCart: builder.query({
       query: (email) => `/cart/${email}`,
-      // timeout: 3000,
-      pollingInterval: 300,
     }),
     addCart: builder.mutation({
       query: (dataArray) => {
         return {
-          url: '/cart/add-to-cart',
+          url: '/cart/addToCart',
           method: 'POST',
           body: dataArray,
         };
       },
     }),
     updateCart: builder.mutation({
-      query: (datas) => ({
+      query: (data) => ({
         url: '/cart',
         method: 'PATCH',
-        body: datas,
+        body: data,
       }),
     }),
     deleteItem: builder.mutation({
       query: (data) => ({
-        url: '/cart/drop-item',
+        url: `/cart/${data}`,
         method: 'DELETE',
-        body: data,
       }),
     }),
   }),

@@ -7,18 +7,11 @@ function SearchBar({ setResults }) {
   const { data, error, isLoading } = useGetAllProductsQuery({
     page: 1,
     size: 40,
+    searchString: input,
   });
   const handleChange = (value) => {
     setInput(value);
     if (value.trim() !== '') {
-      // search go Tieng Viet
-      // setInput(value);
-      // if (value.trim() !== '') {
-      //   const filteredResults = data?.data?.filteredProduct.filter((item) =>
-      //     item.name.toLowerCase().includes(value.toLowerCase())
-      //   );
-      //   setResults(filteredResults);
-
       // search khong can go Tieng Viet
       const removeVietnameseAccent = (str) => {
         const accents =
@@ -31,7 +24,7 @@ function SearchBar({ setResults }) {
         );
         return strWithoutAccents;
       };
-      const filteredResults = data?.data?.filteredProduct.filter((item) =>
+      const filteredResults = data?.data?.filter((item) =>
         removeVietnameseAccent(item.name.toLowerCase()).includes(
           removeVietnameseAccent(value.toLowerCase())
         )

@@ -153,7 +153,7 @@ export const syncCartWithAPI = () => {
         }));
         console.log(carts);
         await axios
-          .post(`${baseUrl}/cart/add-to-cart`, carts, {
+          .post(`${baseUrl}/cart/addToCart`, carts, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then((res) => {

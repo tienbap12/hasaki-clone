@@ -18,7 +18,10 @@ import {
 } from '../../features/CartApi';
 import { toast } from 'react-toastify';
 import ModalOrder from '../Order/ModalOrder';
-import ModalConfirm from '../../components/Modal';
+import ModalConfirm from './Modal';
+import CartList from './CartList';
+import Bill from './Bill';
+import CartListNotLogin from './CartListNotLogin';
 
 export default function Cart() {
   const cart = useSelector((state) => state.cart);
@@ -26,7 +29,6 @@ export default function Cart() {
   const userEmail = useSelector(selectEmail);
   const [price, setPrice] = useState(0);
   const [total, setTotal] = useState(0);
-  const [cartItem, setCartItem] = useState();
   const [isShowOrder, setIsShowOrder] = useState(false);
   const [isRefetchCart, setIsRefetchCart] = useState(false);
   const [show, setShow] = useState(false);
@@ -56,7 +58,7 @@ export default function Cart() {
       let total = 0;
       for (let i = 0; i < cartData?.data?.length; i++) {
         let element =
-          cartData?.data[i].COMMON[0].price * cartData?.data[i].quantity;
+          cartData?.data[i].data[0].price * cartData?.data[i].quantity;
         total += element;
       }
 
@@ -81,31 +83,56 @@ export default function Cart() {
     dispatch(increaseCart(cartItem));
   };
 
-  const handleUpdateDecreaseCartApi = (cartItem) => {
-    const decreaseCart = cartItem?.quantity - 1;
+  const handleUpdateDecreaseCartApi = (_id, product_id, quantity) => {
     const data = {
-      email_user: cartItem.email_user,
-      product_id: cartItem?.product_id,
-      quantity: decreaseCart,
+      _id,
+      product_id,
+      quantity,
     };
-    if (cartItem?.quantity === 1) {
-      const dataDelete = {
-        email_user: cartItem.email_user,
-        product_id: cartItem?.product_id,
-      };
-      deleteCart(dataDelete)
-        .then((response) => {
-          toast.error('Đã xóa sản phẩm khỏi giỏ hàng', {
-            position: 'top-right',
-            autoClose: 2000,
+    if (quantity >= 1) {
+      setTimeout(() => {
+        updateCart(data)
+          .then((response) => {
+            toast.info('Số lượng đã giảm đi 1', {
+              position: 'top-right',
+              autoClose: 2000,
+            });
+            refetch();
+          })
+          .catch((error) => {
+            toast.info('Cập nhật số lượng thất bại', {
+              position: 'top-right',
+              autoClose: 2000,
+            });
           });
-          refetch();
-        })
-        .catch((error) => {});
+      }, 1300);
     } else {
+      setTimeout(() => {
+        const dataDelete = _id;
+        deleteCart(dataDelete)
+          .then((response) => {
+            toast.error('Đã xóa sản phẩm khỏi giỏ hàng', {
+              position: 'top-right',
+              autoClose: 2000,
+            });
+            refetch();
+          })
+          .catch((error) => {
+            // Xử lý lỗi
+          });
+      }, 1000);
+    }
+  };
+  const handleUpdateIncreaseCartApi = (id, id_product, quantity) => {
+    setTimeout(() => {
+      const data = {
+        _id: id,
+        product_id: id_product,
+        quantity,
+      };
       updateCart(data)
         .then((response) => {
-          toast.info('Số lượng đã giảm đi 1', {
+          toast.info('Số lượng đã tăng lên 1', {
             position: 'top-right',
             autoClose: 2000,
           });
@@ -114,42 +141,25 @@ export default function Cart() {
         .catch((error) => {
           // Xử lý lỗi
         });
-    }
-  };
-  const handleUpdateIncreaseCartApi = (cartItem) => {
-    const increaseCart = cartItem?.quantity + 1;
-    const data = {
-      email_user: cartItem.email_user,
-      product_id: cartItem?.product_id,
-      quantity: increaseCart,
-    };
-    updateCart(data)
-      .then((response) => {
-        toast.info('Số lượng đã tăng lên 1', {
-          position: 'top-right',
-          autoClose: 2000,
-        });
-        refetch();
-      })
-      .catch((error) => {
-        // Xử lý lỗi
-      });
+    }, 2000);
   };
   const handleDeleteItemApi = (cartItem) => {
-    const data = {
-      email_user: cartItem?.email_user,
-      product_id: cartItem?.product_id,
-    };
-    deleteCart(data)
-      .then((response) => {
-        toast.error('Đã xóa sản phẩm khỏi giỏ hàng', {
-          position: 'top-right',
-          autoClose: 2000,
-        });
-        refetch();
-        //
-      })
-      .catch((error) => {});
+    setTimeout(() => {
+      const data = {
+        email_user: cartItem?.email_user,
+        product_id: cartItem?.product_id,
+      };
+      deleteCart(data)
+        .then((response) => {
+          toast.error('Đã xóa sản phẩm khỏi giỏ hàng', {
+            position: 'top-right',
+            autoClose: 2000,
+          });
+          refetch();
+          //
+        })
+        .catch((error) => {});
+    }, 2000);
   };
 
   return (
@@ -186,81 +196,24 @@ export default function Cart() {
                       key={cartItem._id}
                       className="cart-body text-center h-[80px] p-2  border-b-[1px] text-[13px]"
                     >
-                      <td align="left">
-                        <div className="flex flex-col sm:flex-row ">
-                          <Link to={`/products/${cartItem.COMMON[0]._id}`}>
-                            <img
-                              src={cartItem?.COMMON[0].image}
-                              alt={cartItem?.COMMON[0].name}
-                              style={{
-                                width: '70px',
-                                height: '70px',
-                                textAlign: 'center',
-                              }}
-                              className="flex justify-center sm:mt-2"
-                            />
-                          </Link>
-                          <div className="p-2">
-                            <p className="title uppercase text-green-900 text-sm font-bold line-clamp-1">
-                              {cartItem?.COMMON[0].brand}
-                            </p>
-                            <p className="text-xs max-w-[200px] line-clamp-2">
-                              {cartItem?.COMMON[0].desc_vn}
-                            </p>
-                            <div className="flex gap-3 mt-2">
-                              <p className="flex gap-1 cursor-pointer hover:text-green-700">
-                                <BsHeart /> Yêu thích
-                              </p>
-                              <p
-                                className="flex gap-1 cursor-pointer hover:text-green-700"
-                                onClick={() => handleDeleteItemApi(cartItem)}
-                              >
-                                <BsFillTrashFill />
-                                Xóa
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td align="right" className="ml-2">
-                        <NumericFormat
-                          className="text-xs"
-                          value={cartItem?.COMMON[0].price}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          suffix=" đ"
-                        />
-                      </td>
-                      <td>
-                        <div className="flex justify-end items-center">
-                          <button
-                            className="h-4 w-4 rounded bg-slate-100"
-                            onClick={() =>
-                              handleUpdateDecreaseCartApi(cartItem)
-                            }
-                          >
-                            -
-                          </button>
-                          <p className="mx-2">{cartItem?.quantity}</p>
-                          <button
-                            className="h-4 w-4 rounded bg-slate-100"
-                            onClick={() =>
-                              handleUpdateIncreaseCartApi(cartItem)
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
-                      </td>
-                      <td align="right">
-                        <NumericFormat
-                          className="text-xs"
-                          value={cartItem?.COMMON[0].price * cartItem?.quantity}
-                          displayType={'text'}
-                          thousandSeparator={true}
-                          suffix=" đ"
-                        />
-                      </td>
+                      <CartList
+                        id={cartItem._id}
+                        id_product={cartItem?.data[0]._id}
+                        image={cartItem?.data[0].image}
+                        name={cartItem?.data[0].name}
+                        brand={cartItem?.data[0].brand}
+                        desc_vn={cartItem?.data[0].desc_vn}
+                        price={cartItem?.data[0].price}
+                        quantity={cartItem?.quantity}
+                        total={cartItem?.data[0].price * cartItem?.quantity}
+                        increaseQuantity={(id, id_product, quantity) =>
+                          handleUpdateIncreaseCartApi(id, id_product, quantity)
+                        }
+                        decreaseQuantity={(id, id_product, quantity) =>
+                          handleUpdateDecreaseCartApi(id, id_product, quantity)
+                        }
+                        deleteCartItem={handleDeleteItemApi}
+                      />
                     </tr>
                   ))}
                 </table>
@@ -334,130 +287,17 @@ export default function Cart() {
                   <th align="right">Thành tiền</th>
                 </tr>
                 {cart.cartItems.map((cartItem, index) => (
-                  <tr
+                  <CartListNotLogin
                     key={cartItem._id}
-                    className="cart-body text-center h-[80px] p-2  border-b-[1px] text-[13px]"
-                  >
-                    <td align="left">
-                      <div className="flex flex-col sm:flex-row ">
-                        <Link to={`/products/${cartItem._id}`}>
-                          <img
-                            src={cartItem.image}
-                            alt={cartItem.name}
-                            style={{
-                              width: '70px',
-                              height: '70px',
-                              textAlign: 'center',
-                            }}
-                            className="flex justify-center"
-                          />
-                        </Link>
-                        <div>
-                          <p className="title uppercase text-green-900 text-sm font-bold line-clamp-1">
-                            {cartItem.brand}
-                          </p>
-                          <p className="text-xs max-w-[200px] line-clamp-2">
-                            {cartItem.desc_vn}
-                          </p>
-                          <div className="flex gap-3 mt-2">
-                            <p className="flex gap-1 cursor-pointer hover:text-green-700">
-                              <BsHeart /> Yêu thích
-                            </p>
-                            <p
-                              className="flex gap-1 cursor-pointer hover:text-green-700"
-                              onClick={() => handleRemoveFromCart(cartItem)}
-                            >
-                              <BsFillTrashFill />
-                              Xóa
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td align="right" className="ml-2">
-                      <NumericFormat
-                        className="text-xs"
-                        value={cartItem.price}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        suffix=" đ"
-                      />
-                    </td>
-                    <td>
-                      <div className="flex justify-end items-center">
-                        <button
-                          className="h-4 w-4 rounded bg-slate-100"
-                          onClick={() => handleDecreaseItem(cartItem)}
-                        >
-                          -
-                        </button>
-                        <p className="mx-2">{cartItem.totalQuantity}</p>
-                        <button
-                          className="h-4 w-4 rounded bg-slate-100"
-                          onClick={() => handleIncreaseItem(cartItem)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                    <td align="right">
-                      <NumericFormat
-                        className="text-xs"
-                        value={cartItem.price * cartItem.totalQuantity}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        suffix=" đ"
-                      />
-                    </td>
-                  </tr>
+                    cartItem={cartItem}
+                    handleRemoveFromCart={handleRemoveFromCart}
+                    handleDecreaseItem={handleDecreaseItem}
+                    handleIncreaseItem={handleIncreaseItem}
+                  />
                 ))}
               </table>
             </div>
-            <div className="check-out lg:block lg:w-1/4">
-              <div className="px-3 mx-auto sticky top-0 mt-[10px]">
-                <h2 className="title py-3 p-3 h-10 border-t-[3px] border-t-green-800 flex items-center font-bold border-b-[1px]">
-                  Hóa đơn của bạn
-                </h2>
-                <div className="p-[10px]">
-                  <div className="mb-[5px] text-[13px] flex justify-between mt-3">
-                    <p>Tạm tính</p>
-                    <NumericFormat
-                      className="text-xs"
-                      value={cart.totalPrice}
-                      displayType={'text'}
-                      thousandSeparator={true}
-                      suffix=" đ"
-                    />
-                  </div>
-                  <div className="mb-[5px] text-[13px] flex justify-between ">
-                    <p>Giảm giá:</p>
-                    <p> 0 ₫</p>
-                  </div>
-                  <div className="mb-[5px] text-[13px] flex justify-between pt-[11px] border-t-[1px] ">
-                    <p>Tổng cộng:</p>
-                    <p className="text-orange-500 font-bold">
-                      <NumericFormat
-                        className="text-xs"
-                        value={cart.totalPrice}
-                        displayType={'text'}
-                        thousandSeparator={true}
-                        suffix=" đ"
-                      />
-                    </p>
-                  </div>
-                  <div className="mb-[5px] text-[13px] flex justify-between">
-                    <p className="text-[#999]">(Đã bao gồm VAT)</p>
-                  </div>
-                </div>
-                <button
-                  variant="primary"
-                  onClick={handleShow}
-                  className="font-bold bg-orange-500 text-white text-center text-lg w-full p-3 rounded sm:w-[40%] sm:float-right lg:w-full"
-                >
-                  Tiến hành thanh toán
-                </button>
-              </div>
-            </div>
+            <Bill totalPrice={cart.totalPrice} handleShow={handleShow} />
           </div>
         </div>
       )}

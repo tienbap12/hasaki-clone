@@ -119,8 +119,8 @@ function DealHot() {
             autoPlaySpeed={3000}
             // slidesToSlide={2}
           >
-            {allProductsData?.data?.filteredProduct
-              .slice(
+            {allProductsData?.data
+              ?.slice(
                 0,
                 limit ? limit : allProductsData?.data?.filteredProduct.length
               )

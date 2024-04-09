@@ -49,7 +49,28 @@ body {
   font-size: 16px;
   line-height: 1;
 }
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 5px;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ddd;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #eee;
+}
 .header {
   // height: 75px;
   // background-color: #326e51;
